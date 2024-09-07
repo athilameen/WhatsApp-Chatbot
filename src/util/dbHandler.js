@@ -1,5 +1,5 @@
 import sessionModel from "../models/session.js";
-import userModel from "../models/user,js";
+import userModel from "../models/user.js";
 import mongoose from "mongoose";
 
 //# This for creating a NEW session
