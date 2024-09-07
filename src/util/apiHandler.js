@@ -38,34 +38,15 @@ export async function sendTextMessage(to,msg){
 export async function sendMarkAsRead(MsgId) {
     try {
         // Make the Axios request to send the message
-        // await axios.post(`https://graph.facebook.com/${version}/${phone_no_id}/messages?access_token=${token}`, {
-        //     messaging_product: "whatsapp",
-        //     status: "read",
-        //     message_id: MsgId
-        //     }, {
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        // });
-
-        console.log(MsgId);
-        console.log("MsgId");
-        
-        
-
-        const data = {
-            "messaging_product": "whatsapp",
-            "status": "read",
-            "message_id": MsgId
-        }
-
-        const response = await axios.post('https://graph.facebook.com/v20.0/395071543694884/messages', data, {
+        await axios.post(`https://graph.facebook.com/${version}/${phone_no_id}/messages?access_token=${token}`, {
+            messaging_product: "whatsapp",
+            status: "read",
+            message_id: MsgId
+            }, {
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          console.log('Response data:', response.data);
+                "Content-Type": "application/json",
+            },
+        });
 
         // If the request is successful, return true
         return true;
@@ -160,7 +141,6 @@ export async function downloadMediaFromURL(mediaUrl) {
       }
 }
 
-
 export async function deleteMediaUsingId(mediaId){
     try {
         const response = await axios.delete(`https://graph.facebook.com/${version}/${mediaId}`, {
@@ -185,7 +165,6 @@ export async function deleteMediaUsingId(mediaId){
         }
     }
 }
-
  
 export async function sendLocationRequestingMessage(to, textMessage) {
     try {
@@ -296,7 +275,7 @@ export async function sendLocationRequestingMessage(to, textMessage) {
                   {
                     type: "image",
                     image: {
-                      link: "https://media.licdn.com/dms/image/D560BAQGZTiENqo920w/company-logo_200_200/0/1715492746760/nothing_apps_logo?e=1726099200&v=beta&t=YlcqFyWkM00AjwJvKWOLdxlSJSKLm9vPsJlfffnuGfc"
+                      link: "https://images.jdmagicbox.com/quickquotes/images_main/ape-auto-plus-5-seater-2100-green-272096118-l48s90zr.png"
                     }
                   }
                 ]

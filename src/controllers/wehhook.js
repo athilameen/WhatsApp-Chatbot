@@ -3,7 +3,7 @@ import {Payload} from "../util/sessions.js"
 import { PICKUP_LOCATION_MSG, DROP_LOCATION_MSG } from "../util/constraints.js"
 import { messagesCheck, statusCheck, locationCheck, listReplyCheck } from "../util/messageValidation.js";
 import {createSession, updateSessionCurrentPath} from "../util/dbHandler.js";
-import { sendMarkAsRead, sendLocationRequestingMessage, sendBookTemplateMessage } from "../util/apiHandler.js";
+import { sendMarkAsRead, sendLocationRequestingMessage, sendSingleListSelectionMessage, sendBookTemplateMessage } from "../util/apiHandler.js";
 
 const verify_token = process.env.VERIFY_TOKEN;
 
@@ -71,7 +71,7 @@ export const listenWebhook = async (req, res) => {
         switch(existingSession.currentPath){
 
           case Payload.PICKUP_LOCATION:
-
+          
             if(locationCheck(body_param)){
 
               const latitude=body_param.entry[0].changes[0].value.messages[0].location.latitude;
@@ -104,19 +104,19 @@ export const listenWebhook = async (req, res) => {
               const row1 = {
                 id: 1,
                 title: "🚘 Car",
-                Description: "AED 15 4👤",
+                description: "AED 150 4👤",
               }
 
               const row2 = {
                 id: 2,
                 title: "🛺 Tuk",
-                Description: "AED 100 3👤",
+                description: "AED 100 3👤",
               }
 
               const row3 = {
                 id: 3,
                 title: "🛵 Motor Bike",
-                Description: "AED 60  1👤",
+                description: "AED 60  1👤",
               }
 
               const singleList  = {
@@ -158,7 +158,7 @@ export const listenWebhook = async (req, res) => {
         }
 
       } else {
-
+        
         //new user
         if(await sendLocationRequestingMessage(phone_no, PICKUP_LOCATION_MSG)){
           //update the session
