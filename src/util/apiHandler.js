@@ -38,15 +38,34 @@ export async function sendTextMessage(to,msg){
 export async function sendMarkAsRead(MsgId) {
     try {
         // Make the Axios request to send the message
-        await axios.post(`https://graph.facebook.com/${version}/${phone_no_id}/messages?access_token=${token}`, {
-            messaging_product: "whatsapp",
-            status: "read",
-            message_id: MsgId
-            }, {
+        // await axios.post(`https://graph.facebook.com/${version}/${phone_no_id}/messages?access_token=${token}`, {
+        //     messaging_product: "whatsapp",
+        //     status: "read",
+        //     message_id: MsgId
+        //     }, {
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        // });
+
+        console.log(MsgId);
+        console.log("MsgId");
+        
+        
+
+        const data = {
+            "messaging_product": "whatsapp",
+            "status": "read",
+            "message_id": MsgId
+        }
+
+        const response = await axios.post('https://graph.facebook.com/v20.0/395071543694884/messages', data, {
             headers: {
-                "Content-Type": "application/json",
-            },
-        });
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          console.log('Response data:', response.data);
 
         // If the request is successful, return true
         return true;
@@ -142,9 +161,6 @@ export async function downloadMediaFromURL(mediaUrl) {
 }
 
 
-
-
-
 export async function deleteMediaUsingId(mediaId){
     try {
         const response = await axios.delete(`https://graph.facebook.com/${version}/${mediaId}`, {
@@ -170,4 +186,138 @@ export async function deleteMediaUsingId(mediaId){
     }
 }
 
+ 
+export async function sendLocationRequestingMessage(to, textMessage) {
+    try {
+      // Make the Axios request to send the message
+      await axios.post(
+        `https://graph.facebook.com/${version}/${phone_no_id}/messages?access_token=${token}`,
+        {
+          messaging_product: "whatsapp",
+          to: to,
+          type: "interactive",
+          interactive: {
+            type: "location_request_message",
+            body: {
+              text: textMessage,
+            },
+            action: {
+              name: "send_location",
+            },
+          },
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+   
+      // If the request is successful, return true
+      return true;
+    } catch (error) {
+      // If an error occurs, log it and return false
+      console.error("Error sending message:", error);
+      return false;
+    }
+  }
 
+  export async function sendSingleListSelectionMessage(to, listBody, singleList) {
+    try {
+      
+      const messageData = {
+        messaging_product: "whatsapp",
+        to: to,
+        type: "interactive",
+        interactive: {
+          type: "list",
+          body: {
+            text: listBody.body_text,
+          },
+          action: {
+            button: listBody.button_text,
+            sections: [singleList],
+          },
+        },
+      };
+   
+      // Conditionally add header and footer, because those are optional ones
+      if (listBody.header_text) {
+        messageData.interactive.header = {
+          type: "text",
+          text: listBody.header_text,
+        };
+      }
+   
+      if (listBody.footer_text) {
+        messageData.interactive.footer = {
+          text: listBody.footer_text,
+        };
+      }
+   
+      // Make the Axios request to send the message
+      await axios.post(
+        `https://graph.facebook.com/${version}/${phone_no_id}/messages?access_token=${token}`,
+        messageData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+   
+      // If the request is successful, return true
+      return true;
+    } catch (error) {
+      // If an error occurs, log it and return false
+      console.error("Error sending message:", error);
+      return false;
+    }
+  }
+
+  export async function sendBookTemplateMessage(to) {
+    try {
+      // Make the Axios request to send the message
+      await axios.post(
+        `https://graph.facebook.com/${version}/${phone_no_id}/messages?access_token=${token}`,
+        {
+          messaging_product: "whatsapp",
+          to: to,
+          type: "template",
+          template: {
+            name: "test1", //template name here
+            language: {
+              code: "en", //template language code here
+            },
+            components: [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "image",
+                            "image": {
+                                "link": "https://media.licdn.com/dms/image/D560BAQGZTiENqo920w/company-logo_200_200/0/1715492746760/nothing_apps_logo?e=1726099200&v=beta&t=YlcqFyWkM00AjwJvKWOLdxlSJSKLm9vPsJlfffnuGfc"
+                            }
+                        }
+                    ]
+                }
+            ],
+          },
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+   
+      // If the request is successful, return true
+      return true;
+    } catch (error) {
+      // If an error occurs, log it and return false
+      console.error("Error sending message:", error);
+      return false;
+    }
+  }
+   
+   

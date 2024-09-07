@@ -1,6 +1,8 @@
 import sessionModel from "../models/session.js";
-import { messagesCheck, statusCheck } from "../util/messageValidation.js";
-import { sendMarkAsRead } from "../util/apiHandler.js";
+import { PICKUP_LOCATION_MSG, DROP_LOCATION_MSG } from "../util/constraints.js"
+import { messagesCheck, statusCheck, locationCheck, listReplyCheck } from "../util/messageValidation.js";
+import {createSession, updateSessionCurrentPath} from "../util/dbHandler.js";
+import { sendMarkAsRead, sendLocationRequestingMessage, sendBookTemplateMessage } from "../util/apiHandler.js";
 
 const verify_token = process.env.VERIFY_TOKEN;
 
@@ -37,6 +39,7 @@ export const listenWebhook = async (req, res) => {
   const body_param = req.body;
   console.log(JSON.stringify(body_param, null, 2));
 
+  //if(typeof body_param != "undefined"){
   if (body_param.object) {
     //# message's value
     //# to get the Response value from Webhook
@@ -59,6 +62,109 @@ export const listenWebhook = async (req, res) => {
         .exec();
       //todo - your business logic
       //#your business logic ends
+
+      if(existingSession){
+        //old user
+        //existing user with the session
+
+        switch(existingSession.currentPath){
+
+          case Payload.PICKUP_LOCATION:
+
+            if(locationCheck(body_param)){
+
+              const latitude=body_param.entry[0].changes[0].value.messages[0].location.latitude;
+              const longitude=body_param.entry[0].changes[0].value.messages[0].location.longitude;
+
+              if(await sendLocationRequestingMessage(phone_no, DROP_LOCATION_MSG)){
+                console.log("requested drop location");
+                updateSessionCurrentPath(existingSession._id, Payload.DROP_LOCATION);
+              }
+
+            } else {
+              console.log("Expecting user pickup location");
+            }
+
+          break;
+
+          case Payload.DROP_LOCATION:
+            if(locationCheck(body_param)){
+
+              const latitude=body_param.entry[0].changes[0].value.messages[0].location.latitude;
+              const longitude=body_param.entry[0].changes[0].value.messages[0].location.longitude;
+
+              //send list available vehicles
+              const listBody = {
+                body_text: 'Pick your vehicle',
+                footer_text: 'Powered by DE',
+                button_text: 'Vehicles List',
+              }
+
+              const row1 = {
+                id: 1,
+                title: "🚘 Car",
+                Description: "AED 15 4👤",
+              }
+
+              const row2 = {
+                id: 2,
+                title: "🛺 Tuk",
+                Description: "AED 100 3👤",
+              }
+
+              const row3 = {
+                id: 3,
+                title: "🛵 Motor Bike",
+                Description: "AED 60  1👤",
+              }
+
+              const singleList  = {
+                title: "Choose a Vehicle?",
+                rows: [row1, row2, row3]
+              }
+
+              if(await sendSingleListSelectionMessage(phone_no, listBody, singleList)){
+                console.log("Sending single list message Successfully");
+                updateSessionCurrentPath(existingSession._id, Payload.VEHICLE_SELECTION);
+              }
+
+            } else {
+              console.log("Expecting user drop location");
+            }
+          break;
+
+          case Payload.VEHICLE_SELECTION:
+            if(listReplyCheck(body_param)){
+
+              const selectedId=body_param.entry[0].changes[0].value.messages[0].interactive.list_reply.id;
+              if(selectedId === "1"){
+                console.log('car');
+              } else if(selectedId === "2"){
+                console.log('tuk');
+              } else if(selectedId === "3"){
+                console.log('bike');
+              }
+
+              if(await sendBookTemplateMessage(phone_no)){
+                updateSessionCurrentPath(existingSession._id, Payload.BOOKING_INFO);
+              }
+
+            } else{
+              console.log("expecting list selection");
+            }
+          break;
+
+        }
+
+      } else {
+
+        //new user
+        if(await sendLocationRequestingMessage(phone_no, PICKUP_LOCATION_MSG)){
+          //update the session
+          createSession(phone_no)
+        }
+          
+      }
 
       // for marking read every messages we received
       sendMarkAsRead(message_id);
