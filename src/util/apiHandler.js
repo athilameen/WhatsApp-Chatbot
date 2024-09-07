@@ -290,17 +290,52 @@ export async function sendLocationRequestingMessage(to, textMessage) {
               code: "en", //template language code here
             },
             components: [
-                {
-                    "type": "header",
-                    "parameters": [
-                        {
-                            "type": "image",
-                            "image": {
-                                "link": "https://media.licdn.com/dms/image/D560BAQGZTiENqo920w/company-logo_200_200/0/1715492746760/nothing_apps_logo?e=1726099200&v=beta&t=YlcqFyWkM00AjwJvKWOLdxlSJSKLm9vPsJlfffnuGfc"
-                            }
-                        }
-                    ]
-                }
+              {
+                type: "header",
+                parameters: [
+                  {
+                    type: "image",
+                    image: {
+                      link: "https://media.licdn.com/dms/image/D560BAQGZTiENqo920w/company-logo_200_200/0/1715492746760/nothing_apps_logo?e=1726099200&v=beta&t=YlcqFyWkM00AjwJvKWOLdxlSJSKLm9vPsJlfffnuGfc"
+                    }
+                  }
+                ]
+              },
+              {
+                type: "body",
+                parameters: [
+                  {
+                    type: "text",
+                    text: "New Market"
+                  },
+                  {
+                    type: "text",
+                    text: "Dubai Shopping Mall"
+                  },
+                  {
+                    type: "text",
+                    text: "AED 100"
+                  },{
+                    type: "text",
+                    text: "Dubai 0123"
+                  },
+                  {
+                    type: "text",
+                    text: "1:30 pm"
+                  }
+                ]
+              },
+              {
+                type: "button",
+                sub_type: "quick_reply",
+                index: "0",
+                parameters: [
+                  {
+                    type: "payload",
+                    payload: "cancel"
+                  }
+                ]
+              }
             ],
           },
         },
