@@ -1,4 +1,5 @@
 import sessionModel from "../models/session.js";
+import {Payload} from "../util/sessions.js"
 import { PICKUP_LOCATION_MSG, DROP_LOCATION_MSG } from "../util/constraints.js"
 import { messagesCheck, statusCheck, locationCheck, listReplyCheck } from "../util/messageValidation.js";
 import {createSession, updateSessionCurrentPath} from "../util/dbHandler.js";
